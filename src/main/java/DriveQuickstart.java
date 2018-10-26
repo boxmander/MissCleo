@@ -80,6 +80,14 @@ public class DriveQuickstart {
             	try {
             		DateTime googleDirveFileModifedDateTime = file.getModifiedTime();
             		DateTime googleDriveFileCreatedDateTime = file.getCreatedTime();
+            		
+            		if(googleDirveFileModifedDateTime == null) {
+            			System.out.println("googleDirveFileModifedDateTime is null");
+            		}
+            		
+            		if(googleDriveFileCreatedDateTime == null) {
+            			System.out.println("googleDriveFileCreatedDateTime is null");
+            		}
             		//LocalDateTime modifedLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(googlDateTime.getValue()), ZoneId.systemDefault());
                 	//System.out.printf("%s (%s)\n", file.getName(), file.getId(), modifedLocalDateTime.format(googleDriveDtf));
                 	//System.out.printf("%s (%s)\n", file.getName(), file.getId());
