@@ -69,7 +69,7 @@ public class DriveQuickstart {
         // Print the names and IDs for up to 10 files.
         FileList result = service.files().list()
                 .setPageSize(20)
-                .setFields("nextPageToken, files(id, name)")
+                //.setFields("nextPageToken, files(id, name)")
                 .execute();
         List<File> files = result.getFiles();
         if (files == null || files.isEmpty()) {
