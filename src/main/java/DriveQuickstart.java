@@ -89,7 +89,7 @@ public class DriveQuickstart {
             		for(StackTraceElement ste : steArray) {
             			steSb.append(ste.toString());
             		}
-            		System.out.println(steSb);
+            		System.out.println("StackTraceElement[" + steSb.toString() + "]");
             	}
             }
         }
