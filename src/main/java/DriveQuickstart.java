@@ -7,6 +7,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
@@ -17,10 +18,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
 public class DriveQuickstart {
+	private static final DateTimeFormatter googleDriveDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
@@ -71,7 +77,9 @@ public class DriveQuickstart {
         } else {
             System.out.println("Files:");
             for (File file : files) {
-                System.out.printf("%s (%s)\n", file.getName(), file.getId());
+            	DateTime googlDateTime = file.getModifiedTime();
+            	LocalDateTime modifedLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(googlDateTime.getValue()), ZoneId.systemDefault());
+                System.out.printf("%s (%s)\n", file.getName(), file.getId(), modifedLocalDateTime.format(googleDriveDtf));
             }
         }
     }
