@@ -86,6 +86,7 @@ public class DriveQuickstart {
             	} catch(Exception e) {
             		StringBuilder steSb = new StringBuilder();
             		StackTraceElement[] steArray = e.getStackTrace();
+            		steSb.append(e.getMessage() + "\n");
             		for(StackTraceElement ste : steArray) {
             			steSb.append(ste.toString() + "\n");
             		}
