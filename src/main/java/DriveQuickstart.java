@@ -69,7 +69,7 @@ public class DriveQuickstart {
         // Print the names and IDs for up to 10 files.
         FileList result = service.files().list()
         		//.setQ
-        		.setQ("name='*.mp3'")
+        		.setQ("name contains 'mp3'")
                 .setPageSize(200)
                 .setFields("nextPageToken, files(id, name, modifiedTime, createdTime)")
                 .execute();
