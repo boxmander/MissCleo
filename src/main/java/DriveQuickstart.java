@@ -68,7 +68,9 @@ public class DriveQuickstart {
 
         // Print the names and IDs for up to 10 files.
         FileList result = service.files().list()
-                .setPageSize(20)
+        		//.setQ
+        		.setQ("name='*.mp3'")
+                .setPageSize(200)
                 .setFields("nextPageToken, files(id, name, modifiedTime, createdTime)")
                 .execute();
         List<File> files = result.getFiles();
@@ -80,7 +82,8 @@ public class DriveQuickstart {
             	try {
             		DateTime googleDirveFileModifedDateTime = file.getModifiedTime();
             		DateTime googleDriveFileCreatedDateTime = file.getCreatedTime();
-            		
+
+            		/*
             		if(googleDirveFileModifedDateTime == null) {
             			System.out.println("googleDirveFileModifedDateTime is null");
             		}
@@ -88,6 +91,8 @@ public class DriveQuickstart {
             		if(googleDriveFileCreatedDateTime == null) {
             			System.out.println("googleDriveFileCreatedDateTime is null");
             		}
+            		*/
+
             		//LocalDateTime modifedLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(googlDateTime.getValue()), ZoneId.systemDefault());
                 	//System.out.printf("%s (%s)\n", file.getName(), file.getId(), modifedLocalDateTime.format(googleDriveDtf));
                 	//System.out.printf("%s (%s)\n", file.getName(), file.getId());
