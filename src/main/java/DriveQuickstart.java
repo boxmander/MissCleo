@@ -77,10 +77,10 @@ public class DriveQuickstart {
         } else {
             System.out.println("Files:");
             for (File file : files) {
-            	//DateTime googlDateTime = file.getModifiedTime();
+            	DateTime googleDateTime = file.getModifiedTime();
             	//LocalDateTime modifedLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(googlDateTime.getValue()), ZoneId.systemDefault());
                 //System.out.printf("%s (%s)\n", file.getName(), file.getId(), modifedLocalDateTime.format(googleDriveDtf));
-                System.out.printf("%s (%s)\n", file.getName(), file.getId());
+                System.out.printf("%s (%s)\n", file.getName(), file.getId(), googleDateTime.toString());
             }
         }
     }
