@@ -14,6 +14,8 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,6 +28,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class DriveQuickstart {
+	private Drive googleDriveService;
+	private List<com.google.api.services.drive.model.File> googleDriveFileList;
 	//private static final DateTimeFormatter googleDriveDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -37,6 +41,16 @@ public class DriveQuickstart {
      */
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_METADATA_READONLY);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+
+    public DriveQuickstart() throws GeneralSecurityException, IOException {
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        googleDriveService = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+    }
+
+    public Drive getGoogleDriveService()											{ return googleDriveService; }
+    public List<com.google.api.services.drive.model.File> getGoogleDriveFileList()	{ return googleDriveFileList; }
 
     /**
      * Creates an authorized Credential object.
@@ -60,55 +74,42 @@ public class DriveQuickstart {
     }
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
-        // Build a new authorized API client service.
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
+        DriveQuickstart newDriveQuickStart = new DriveQuickstart();
+        newDriveQuickStart.populateFiles();
+        System.out.println("Here is the file we want to get[" + newDriveQuickStart.getGoogleDriveFileList().get(0).getName() + "]");
+        newDriveQuickStart.writeFile(newDriveQuickStart.getGoogleDriveFileList().get(0));
+        System.out.println("Done?!");
+    }
 
+    private void populateFiles() throws IOException {
         // Print the names and IDs for up to 10 files.
-        FileList result = service.files().list()
-        		//.setQ
+        FileList result = getGoogleDriveService().files().list()
         		.setQ("name contains 'mp3'")
                 .setPageSize(200)
                 .setFields("nextPageToken, files(id, name, modifiedTime, createdTime)")
                 .execute();
-        List<File> files = result.getFiles();
-        if (files == null || files.isEmpty()) {
-            System.out.println("No files found.");
-        } else {
-            System.out.println("Files:");
-            for (File file : files) {
-            	try {
-            		DateTime googleDirveFileModifedDateTime = file.getModifiedTime();
-            		DateTime googleDriveFileCreatedDateTime = file.getCreatedTime();
+        googleDriveFileList = result.getFiles();
+    }
 
-            		/*
-            		if(googleDirveFileModifedDateTime == null) {
-            			System.out.println("googleDirveFileModifedDateTime is null");
-            		}
-            		
-            		if(googleDriveFileCreatedDateTime == null) {
-            			System.out.println("googleDriveFileCreatedDateTime is null");
-            		}
-            		*/
-
-            		//LocalDateTime modifedLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(googlDateTime.getValue()), ZoneId.systemDefault());
-                	//System.out.printf("%s (%s)\n", file.getName(), file.getId(), modifedLocalDateTime.format(googleDriveDtf));
-                	//System.out.printf("%s (%s)\n", file.getName(), file.getId());
-            		String modifedDateTimeString = (googleDirveFileModifedDateTime != null) ? googleDirveFileModifedDateTime.toString() : "null";
-            		String createdDateTimeString = (googleDriveFileCreatedDateTime != null) ? googleDriveFileCreatedDateTime.toString() : "null";
-            		System.out.println("FileName[" + file.getName() + "] fileModified[" + modifedDateTimeString + "] createdDateTimeString[" + createdDateTimeString + "]");
-            	} catch(Exception e) {
-            		StringBuilder steSb = new StringBuilder();
-            		StackTraceElement[] steArray = e.getStackTrace();
-            		steSb.append(e.getMessage() + "\n");
-            		for(StackTraceElement ste : steArray) {
-            			steSb.append(ste.toString() + "\n");
-            		}
-            		System.out.println("StackTraceElement[\n" + steSb.toString() + "]");
-            	}
-            }
-        }
+    private void writeFile(com.google.api.services.drive.model.File googleDriveFile) throws IOException {
+    	java.io.File outputFile = new java.io.File(googleDriveFile.getName());
+    	FileOutputStream fop = new FileOutputStream(outputFile);
+    	
+    	if(!outputFile.exists()) {
+    		outputFile.createNewFile();
+    	}
+    	getGoogleDriveService().files().get(googleDriveFile.getId()).executeMediaAndDownloadTo(fop);
+    	fop.flush();
+    	fop.close();
+    }
+    
+    private static String getStackTraceAsString(Exception e) {
+		StringBuilder steSb = new StringBuilder();
+		StackTraceElement[] steArray = e.getStackTrace();
+		steSb.append(e.getMessage() + "\n");
+		for(StackTraceElement ste : steArray) {
+			steSb.append(ste.toString() + "\n");
+		}
+		return steSb.toString();
     }
 }
